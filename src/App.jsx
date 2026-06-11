@@ -3,16 +3,17 @@ import axios from 'axios';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
 
-// Base URL configuration pointing directly to your Node.js backend
+// Base URL driven by environment variable — falls back to the production Render deployment.
+// Set VITE_API_URL in your .env.production file (e.g. VITE_API_URL=https://bynd-backend-owi6.onrender.com/api)
 const API = axios.create({
-  baseURL: 'https://bynd-backend-owi6.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://bynd-backend-owi6.onrender.com/api',
   withCredentials: true // CRITICAL: Allows browser cookie handling for JWT sessions
 });
 
 function App() {
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('login'); // login | register | loan
+  const [activeTab, setActiveTab] = useState('login'); 
   const [message, setMessage] = useState({ type: '', text: '' });
 
   // Form States
@@ -35,9 +36,9 @@ function App() {
       if (userRole === "admin" || userRole === "ceo" || userRole === "crm") {
         showAlert('success', `Login successful! Redirecting as ${userRole.toUpperCase()}...`);
 
-        // Redirect to external management app hosted on port 5174
+        // Redirect target driven by VITE_DASHBOARD_URL env variable — falls back to the production Vercel deployment.
         setTimeout(() => {
-          window.location.replace("https://frontend-dashboard-one-ashen.vercel.app");
+          window.location.replace(import.meta.env.VITE_DASHBOARD_URL || "https://frontend-dashboard-one-ashen.vercel.app");
         }, 1000);
 
       } else if (userRole === "employeeType") {
@@ -46,9 +47,9 @@ function App() {
       else if (userRole === "employee") {
         showAlert('success', `Login successful! Redirecting as ${userRole.toUpperCase()}...`);
 
-        // Redirect to external employee app hosted on port 5176
+        // Redirect target driven by VITE_EMPLOYEE_URL env variable — falls back to the production Vercel deployment.
         setTimeout(() => {
-          window.location.replace("https://employee-dashboard-seven-omega.vercel.app");
+          window.location.replace(import.meta.env.VITE_EMPLOYEE_URL || "https://employee-dashboard-seven-omega.vercel.app");
         }, 1000);
       }
       else {
@@ -81,11 +82,18 @@ function App() {
         loanAmount: parseFloat(loanData.loanAmount)
       };
 
+      // ⚠️  SECURITY NOTICE — Developer Advisory:
+      // The Ramfincorp vendor API credentials ('api-key' / 'api-user') MUST NOT be
+      // injected here on the client side. Exposing these tokens in browser-readable
+      // JavaScript bundles enables trivial credential extraction via DevTools or
+      // network sniffing, compromising the entire B2B vendor integration node.
+      //
+      // These headers are appended exclusively on the Backend server (loanRoutes.js)
+      // before the outbound request is proxied to the Ramfincorp pre-production endpoint.
+      // This client layer only forwards the sanitised lead payload — no secrets.
       const res = await API.post('/loans/submit-lead', payload, {
         headers: {
-          'Content-Type': 'application/json',
-          'api-key': 'leadGenXID=ramfin_qpg8TgZFziSq69z4VoMpwq6tgKaJkP6m',
-          'api-user': 'leadGenXkey=E2vjxkJBIsVdTEBHdCznWoMjMH7FRKSV'
+          'Content-Type': 'application/json'
         }
       });
       if (res.data.success) {

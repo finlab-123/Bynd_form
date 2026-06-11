@@ -37,7 +37,7 @@ function App() {
 
         // Redirect to external management app hosted on port 5174
         setTimeout(() => {
-          window.location.replace("http://localhost:5174");
+          window.location.replace("https://frontend-dashboard-one-ashen.vercel.app");
         }, 1000);
 
       } else if (userRole === "employeeType") {
@@ -48,7 +48,7 @@ function App() {
 
         // Redirect to external employee app hosted on port 5176
         setTimeout(() => {
-          window.location.replace("http://localhost:5176");
+          window.location.replace("https://employee-dashboard-seven-omega.vercel.app");
         }, 1000);
       }
       else {

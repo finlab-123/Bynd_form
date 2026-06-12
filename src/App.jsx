@@ -3,11 +3,10 @@ import axios from 'axios';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
 
-// Base URL driven by environment variable — falls back to the production Render deployment.
-// Set VITE_API_URL in your .env.production file (e.g. VITE_API_URL=https://bynd-backend-owi6.onrender.com/api)
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://bynd-backend-owi6.onrender.com/api',
-  withCredentials: true // CRITICAL: Allows browser cookie handling for JWT sessions
+  baseURL:'https://bynd-backend-owi6.onrender.com/api',
+  withCredentials: true
 });
 
 function App() {

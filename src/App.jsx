@@ -13,7 +13,7 @@ const API = axios.create({
 function App() {
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('login'); 
+  const [activeTab, setActiveTab] = useState('login');
   const [message, setMessage] = useState({ type: '', text: '' });
 
   // Form States

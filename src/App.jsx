@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://bynd-backend-owi6.onrender.com/api',
   withCredentials: true
 });
 

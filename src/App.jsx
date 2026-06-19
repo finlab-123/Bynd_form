@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const API = axios.create({
-  baseURL:'https://bynd-backend-owi6.onrender.com/api',
+  baseURL: 'http://localhost:5000/api',
   withCredentials: true
 });
 
@@ -31,13 +31,13 @@ function App() {
     try {
       const res = await API.post('/auth/login', loginData);
       const userRole = res.data.data.role;
-
+      console.log('User Role:', userRole);
       if (userRole === "admin" || userRole === "ceo" || userRole === "crm") {
         showAlert('success', `Login successful! Redirecting as ${userRole.toUpperCase()}...`);
 
         // Redirect target driven by VITE_DASHBOARD_URL env variable — falls back to the production Vercel deployment.
         setTimeout(() => {
-          window.location.replace(import.meta.env.VITE_DASHBOARD_URL || "https://frontend-dashboard-one-ashen.vercel.app");
+          window.location.replace(`${import.meta.env.VITE_DASHBOARD_URL}`);
         }, 1000);
 
       } else if (userRole === "employeeType") {
@@ -48,7 +48,7 @@ function App() {
 
         // Redirect target driven by VITE_EMPLOYEE_URL env variable — falls back to the production Vercel deployment.
         setTimeout(() => {
-          window.location.replace(import.meta.env.VITE_EMPLOYEE_URL || "https://employee-dashboard-seven-omega.vercel.app");
+          window.location.replace(`${import.meta.env.VITE_EMPLOYEE_URL}`);
         }, 1000);
       }
       else {
@@ -80,16 +80,6 @@ function App() {
         ...loanData,
         loanAmount: parseFloat(loanData.loanAmount)
       };
-
-      // ⚠️  SECURITY NOTICE — Developer Advisory:
-      // The Ramfincorp vendor API credentials ('api-key' / 'api-user') MUST NOT be
-      // injected here on the client side. Exposing these tokens in browser-readable
-      // JavaScript bundles enables trivial credential extraction via DevTools or
-      // network sniffing, compromising the entire B2B vendor integration node.
-      //
-      // These headers are appended exclusively on the Backend server (loanRoutes.js)
-      // before the outbound request is proxied to the Ramfincorp pre-production endpoint.
-      // This client layer only forwards the sanitised lead payload — no secrets.
       const res = await API.post('/loans/submit-lead', payload, {
         headers: {
           'Content-Type': 'application/json'
